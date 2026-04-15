@@ -2,4 +2,4 @@
 
 ## Meetings
 ### April 2026
-[Council Meetings](/council-meetings/2026-april)
+[Council Meetings](/council-meetings/2026-april/)
