@@ -1,3 +1,1 @@
-# council
-# council
-# council
+# Guild Council Resouces
