@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Wolf Pack — Guild Council</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8d48b;
+    --gold-dark: #8a6d1b;
+    --blue-dark: #0a0e1a;
+    --blue-mid: #111827;
+    --blue-accent: #1e3a5f;
+    --blue-glow: #2563eb;
+    --red-accent: #7f1d1d;
+    --red-glow: #dc2626;
+    --green-accent: #166534;
+    --green-glow: #22c55e;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --panel-bg: rgba(15, 20, 35, 0.85);
+    --panel-border: rgba(201, 168, 76, 0.3);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--blue-dark);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ── Slide Container ── */
+  .slides-wrapper {
+    width: 100%; height: 100%;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    background: linear-gradient(135deg, #070b14 0%, #0f172a 40%, #0c1220 100%);
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── Background Particles ── */
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background:
+      radial-gradient(1px 1px at 10% 20%, rgba(201,168,76,0.3), transparent),
+      radial-gradient(1px 1px at 30% 70%, rgba(201,168,76,0.2), transparent),
+      radial-gradient(1px 1px at 50% 10%, rgba(201,168,76,0.15), transparent),
+      radial-gradient(1px 1px at 70% 50%, rgba(201,168,76,0.25), transparent),
+      radial-gradient(1px 1px at 90% 80%, rgba(201,168,76,0.2), transparent),
+      radial-gradient(1.5px 1.5px at 20% 90%, rgba(37,99,235,0.2), transparent),
+      radial-gradient(1.5px 1.5px at 80% 30%, rgba(37,99,235,0.15), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide > * { position: relative; z-index: 1; }
+
+  /* ── Typography ── */
+  .slide-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-align: center;
+    text-shadow: 0 0 30px rgba(201,168,76,0.4), 0 0 60px rgba(201,168,76,0.15);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+
+  .slide-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 35px;
+    letter-spacing: 1px;
+  }
+
+  .epic-quote {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--gold-light);
+    text-align: center;
+    font-style: italic;
+    max-width: 700px;
+    line-height: 1.8;
+    text-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+
+  /* ── WoW-Style Panel ── */
+  .wow-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 24px 28px;
+    position: relative;
+    box-shadow:
+      inset 0 1px 0 rgba(201,168,76,0.1),
+      0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  .wow-panel::before,
+  .wow-panel::after {
+    content: '';
+    position: absolute;
+    width: 12px; height: 12px;
+    border: 2px solid var(--gold);
+    opacity: 0.5;
+  }
+  .wow-panel::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+  .wow-panel::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+  .wow-panel h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1rem;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .wow-panel ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .wow-panel li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .wow-panel li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 0.55rem;
+    top: 9px;
+  }
+
+  /* ── Grid Layouts ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; width: 100%; max-width: 1100px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; width: 100%; max-width: 1200px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; width: 100%; max-width: 1100px; }
+
+  /* ── Wolf Icon (SVG inline) ── */
+  .wolf-icon {
+    width: 80px; height: 80px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 15px rgba(201,168,76,0.4));
+  }
+
+  /* ── Guild Logo ── */
+  .guild-logo {
+    max-width: 280px;
+    height: auto;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 0 25px rgba(201,168,76,0.35)) drop-shadow(0 0 50px rgba(201,168,76,0.15));
+    animation: logoGlow 3s ease-in-out infinite;
+  }
+
+  .guild-logo.large {
+    max-width: 320px;
+  }
+
+  @keyframes logoGlow {
+    0%, 100% { filter: drop-shadow(0 0 25px rgba(201,168,76,0.35)) drop-shadow(0 0 50px rgba(201,168,76,0.15)); }
+    50% { filter: drop-shadow(0 0 35px rgba(201,168,76,0.5)) drop-shadow(0 0 70px rgba(201,168,76,0.25)); }
+  }
+
+  /* ── Comparison Slide ── */
+  .compare-side {
+    padding: 30px;
+    border-radius: 6px;
+    min-height: 300px;
+  }
+  .compare-chaos {
+    background: linear-gradient(135deg, rgba(127,29,29,0.2), rgba(15,20,35,0.9));
+    border: 1px solid rgba(220,38,38,0.3);
+  }
+  .compare-order {
+    background: linear-gradient(135deg, rgba(22,101,52,0.2), rgba(15,20,35,0.9));
+    border: 1px solid rgba(34,197,94,0.3);
+  }
+  .compare-side h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+  .compare-chaos h3 { color: #ef4444; }
+  .compare-order h3 { color: #22c55e; }
+
+  .compare-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.95rem;
+  }
+  .compare-item .icon { font-size: 1.2rem; }
+
+  /* ── Triangle Diagram ── */
+  .triangle-container {
+    position: relative;
+    width: 500px;
+    height: 380px;
+    margin: 0 auto 30px;
+  }
+
+  .triangle-node {
+    position: absolute;
+    width: 180px;
+    text-align: center;
+    padding: 18px 14px;
+    border-radius: 6px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  .triangle-top {
+    top: 0; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(15,20,35,0.9));
+    border: 1px solid var(--gold);
+    color: var(--gold);
+  }
+  .triangle-left {
+    bottom: 0; left: 0;
+    background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(15,20,35,0.9));
+    border: 1px solid rgba(37,99,235,0.5);
+    color: #60a5fa;
+  }
+  .triangle-right {
+    bottom: 0; right: 0;
+    background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(15,20,35,0.9));
+    border: 1px solid rgba(34,197,94,0.5);
+    color: #4ade80;
+  }
+
+  .triangle-node .node-label { font-size: 1.1rem; display: block; margin-bottom: 6px; }
+  .triangle-node .node-desc { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 0.75rem; color: var(--text-dim); }
+
+  /* SVG lines for triangle */
+  .triangle-lines {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  /* ── Role Cards ── */
+  .role-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .role-avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    border: 2px solid;
+  }
+
+  .role-avatar.gold { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold); }
+  .role-avatar.blue { background: rgba(37,99,235,0.15); border-color: #3b82f6; color: #60a5fa; }
+  .role-avatar.green { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #4ade80; }
+  .role-avatar.purple { background: rgba(139,92,246,0.15); border-color: #8b5cf6; color: #a78bfa; }
+  .role-avatar.red { background: rgba(239,68,68,0.15); border-color: #ef4444; color: #f87171; }
+
+  .role-info h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    margin-bottom: 3px;
+  }
+  .role-info .role-title {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* ── Flow Diagram ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+  }
+
+  .flow-box {
+    padding: 14px 28px;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid;
+  }
+
+  .flow-arrow {
+    font-size: 1.5rem;
+    color: var(--gold);
+  }
+
+  .flow-box.gold-box { background: rgba(201,168,76,0.12); border-color: var(--gold); color: var(--gold); }
+  .flow-box.blue-box { background: rgba(37,99,235,0.12); border-color: #3b82f6; color: #60a5fa; }
+  .flow-box.green-box { background: rgba(34,197,94,0.12); border-color: #22c55e; color: #4ade80; }
+
+  /* ── Section Header ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .section-header .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .section-header h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── Expectation Icons ── */
+  .expect-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .expect-card {
+    text-align: center;
+    padding: 28px 16px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .expect-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.15);
+  }
+
+  .expect-icon {
+    font-size: 2.5rem;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .expect-card h4 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .expect-card p {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* ── Navigation ── */
+  .nav-bar {
+    position: fixed;
+    bottom: 0; left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 30px;
+    background: rgba(7,11,20,0.95);
+    border-top: 1px solid rgba(201,168,76,0.15);
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .nav-btn {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    padding: 8px 24px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+
+  .nav-btn:hover {
+    background: rgba(201,168,76,0.2);
+    box-shadow: 0 0 15px rgba(201,168,76,0.2);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .slide-counter {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+  }
+
+  .slide-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .slide-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(201,168,76,0.2);
+    border: 1px solid rgba(201,168,76,0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .slide-dot.active {
+    background: var(--gold);
+    box-shadow: 0 0 8px rgba(201,168,76,0.5);
+  }
+
+  /* ── Network Diagram ── */
+  .network-center {
+    width: 100%;
+    max-width: 700px;
+    position: relative;
+    height: 320px;
+    margin: 0 auto;
+  }
+
+  .network-node {
+    position: absolute;
+    text-align: center;
+    padding: 14px 18px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 50%;
+    width: 120px; height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  }
+
+  .network-node h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    color: var(--gold-light);
+    margin-bottom: 2px;
+  }
+
+  .network-node p {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  /* ── Recruiting Ownership ── */
+  .recruit-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .recruit-card {
+    text-align: center;
+    padding: 22px 14px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+  }
+
+  .recruit-card .recruit-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .recruit-card h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--gold-light);
+    margin-bottom: 4px;
+  }
+
+  .recruit-card p {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Final Slide ── */
+  .final-text {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    text-align: center;
+    line-height: 2.2;
+    text-shadow: 0 0 40px rgba(201,168,76,0.3);
+    letter-spacing: 1px;
+  }
+
+  .final-text span {
+    display: block;
+  }
+
+  /* ── Glow Divider ── */
+  .glow-divider {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(201,168,76,0.4);
+  }
+
+  /* ── Keyframe Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide.active .slide-title { animation: fadeInUp 0.6s ease forwards; }
+  .slide.active .slide-subtitle { animation: fadeInUp 0.6s 0.1s ease forwards; }
+  .slide.active .wow-panel { animation: fadeInUp 0.5s ease forwards; }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 15px rgba(201,168,76,0.2); }
+    50% { box-shadow: 0 0 30px rgba(201,168,76,0.4); }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .expect-grid, .recruit-grid { grid-template-columns: 1fr 1fr; }
+    .slide-title { font-size: 2rem; }
+    .slide { padding: 30px 20px; }
+    .triangle-container { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides-wrapper">
+
+  <!-- ═══════════════════════════════════════════ SLIDE 1 — THE PACK ═══════════════════════════════════════════ -->
+  <div class="slide active" id="slide-1">
+    <img src="brotherhood_logo.png" alt="Brotherhood of the Wolf" class="guild-logo large">
+    <h1 class="slide-title">The Pack</h1>
+    <div class="glow-divider"></div>
+    <p class="epic-quote">
+      „Wir bauen nicht einfach eine Gilde —<br>
+      wir bauen ein Rudel."
+    </p>
+    <div style="margin-top: 40px; display: flex; gap: 30px; opacity: 0.5;">
+      <span style="font-size: 1.8rem;">🐺</span>
+      <span style="font-size: 1.8rem;">🐺</span>
+      <span style="font-size: 1.8rem;">🐺</span>
+      <span style="font-size: 1.8rem;">🐺</span>
+      <span style="font-size: 1.8rem;">🐺</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 2 — VISION ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-2">
+    <h1 class="slide-title">Unsere Vision</h1>
+    <p class="slide-subtitle">Identität · Richtung · Die richtigen Spieler</p>
+
+    <div class="grid-2" style="margin-bottom: 20px;">
+      <div class="wow-panel">
+        <h3>⚔️ Was wir sind</h3>
+        <ul>
+          <li>Community-fokussierte WoW-Gilde</li>
+          <li>Mix aus PvE und PvP</li>
+          <li>Zwischen Casual und Semi-Core</li>
+          <li>Ambitioniert, aber entspannt</li>
+          <li>Performance ohne Toxizität</li>
+        </ul>
+      </div>
+      <div class="wow-panel">
+        <h3>🎯 Was wir erreichen wollen</h3>
+        <ul>
+          <li>PvE: Raid Clears (NHC & HC, ggf. Mythic), M+ auf allen Leveln</li>
+          <li>PvP: Arena & RBG Progression — als Team mind. 2.4</li>
+          <li>Community: Langfristiger Spaß & echte Verbindung</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom: 20px;">
+      <div class="wow-panel">
+        <h3>🐺 Welche Spieler wir suchen</h3>
+        <ul>
+          <li>Respektvoll, ruhig, lösungsorientiert</li>
+          <li>Wollen Teil einer Community sein</li>
+          <li>Motiviert, aber nicht toxisch</li>
+          <li>Team-first Mindset</li>
+        </ul>
+      </div>
+      <div class="wow-panel">
+        <h3>🚫 Was wir NICHT sind</h3>
+        <ul>
+          <li>Keine Ego-Spieler</li>
+          <li>Kein Drama</li>
+          <li>Kein toxisches Verhalten</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="wow-panel" style="max-width: 1100px; width: 100%; text-align: center;">
+      <h3>🤝 Was wir zusammen machen</h3>
+      <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin-top: 8px;">
+        <span style="color: var(--text); font-size: 0.9rem;">⚔️ Raids & M+</span>
+        <span style="color: var(--text); font-size: 0.9rem;">🏟️ PvP & Arenen</span>
+        <span style="color: var(--text); font-size: 0.9rem;">🎭 Events & Transmog</span>
+        <span style="color: var(--text); font-size: 0.9rem;">🎙️ Voice & Abhängen</span>
+        <span style="color: var(--text); font-size: 0.9rem;">📈 Gemeinsam besser werden</span>
+      </div>
+      <div class="glow-divider" style="margin-top: 16px;"></div>
+      <p class="epic-quote" style="font-size: 1.1rem; margin-top: 10px;">
+        „Wir loggen ein, weil wir wollen — nicht weil wir müssen."
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 3 — THE PROBLEM ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-3">
+    <h1 class="slide-title">Das Problem</h1>
+    <p class="slide-subtitle">Warum Struktur den Unterschied macht</p>
+
+    <div class="grid-2" style="max-width: 1000px;">
+      <div class="compare-side compare-chaos">
+        <h3>❌ Chaos</h3>
+        <div class="compare-item"><span class="icon">😶</span> Keiner übernimmt Verantwortung</div>
+        <div class="compare-item"><span class="icon">👻</span> Inaktivität & Stille im Voice</div>
+        <div class="compare-item"><span class="icon">🎲</span> Zufällige Gruppen, kein Plan</div>
+        <div class="compare-item"><span class="icon">💀</span> Spieler kommen und gehen</div>
+        <div class="compare-item"><span class="icon">🔥</span> Drama statt Lösungen</div>
+        <div class="compare-item"><span class="icon">📉</span> Kein Wachstum, kein Ziel</div>
+      </div>
+      <div class="compare-side compare-order">
+        <h3>✅ Struktur</h3>
+        <div class="compare-item"><span class="icon">🐺</span> Klare Verantwortung pro Bereich</div>
+        <div class="compare-item"><span class="icon">🎙️</span> Aktive Voice-Kultur</div>
+        <div class="compare-item"><span class="icon">📋</span> Geplante Gruppen & Events</div>
+        <div class="compare-item"><span class="icon">🤝</span> Spieler fühlen sich zugehörig</div>
+        <div class="compare-item"><span class="icon">🛡️</span> Lösungsorientierte Kultur</div>
+        <div class="compare-item"><span class="icon">📈</span> Gemeinsame Progression</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 4 — THE SYSTEM ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-4">
+    <h1 class="slide-title">Das System</h1>
+    <p class="slide-subtitle">Wie das Rudel funktioniert</p>
+
+    <div class="triangle-container">
+      <svg class="triangle-lines" viewBox="0 0 500 380">
+        <line x1="250" y1="70" x2="90" y2="280" stroke="rgba(201,168,76,0.25)" stroke-width="1" stroke-dasharray="6,4"/>
+        <line x1="250" y1="70" x2="410" y2="280" stroke="rgba(201,168,76,0.25)" stroke-width="1" stroke-dasharray="6,4"/>
+        <line x1="90" y1="310" x2="410" y2="310" stroke="rgba(201,168,76,0.25)" stroke-width="1" stroke-dasharray="6,4"/>
+      </svg>
+      <div class="triangle-node triangle-top">
+        <span class="node-label">🐺 Team-Leads</span>
+        <span class="node-desc">Richtung & Verantwortung, Orga</span>
+      </div>
+      <div class="triangle-node triangle-left">
+        <span class="node-label">⚔️ Support</span>
+        <span class="node-desc">Umsetzung & Aktion, Verantwortung Teilbereiche</span>
+      </div>
+      <div class="triangle-node triangle-right">
+        <span class="node-label">🛡️ Council</span>
+        <span class="node-desc">Aktivität & Koordination, Community</span>
+      </div>
+    </div>
+
+    <div class="wow-panel" style="text-align: center; max-width: 600px;">
+      <p class="epic-quote" style="font-size: 1.1rem;">
+        „Keine Einzelgänger — wir bewegen uns als Rudel."
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 5 — PACK STRUCTURE ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-5">
+    <h1 class="slide-title">Die Rudelstruktur</h1>
+    <p class="slide-subtitle">Wer macht was — klar und sichtbar</p>
+
+    <div class="grid-3">
+      <!-- COMMUNITY -->
+      <div class="wow-panel" style="border-color: rgba(201,168,76,0.5);">
+        <h3 style="text-align: center; font-size: 1.1rem;">🏰 Community</h3>
+        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div class="role-card">
+            <div class="role-avatar gold">M</div>
+            <div class="role-info">
+              <h4>Marc</h4>
+              <span class="role-title">Community Lead — "Alpha of the Pack", Bürgermeister von Ragnarok</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">L</div>
+            <div class="role-info">
+              <h4>Lisa</h4>
+              <span class="role-title">Vice — Voice of the Pack, Recruiting Casuals und Messaging & Gildenbank</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">LE</div>
+            <div class="role-info">
+              <h4>Marco</h4>
+              <span class="role-title">Integration neuer Spieler & Mitglieder</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">B</div>
+            <div class="role-info">
+              <h4>Bizzy</h4>
+              <span class="role-title">Achievement Runs — Keeper of Legends</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PVE -->
+      <div class="wow-panel" style="border-color: rgba(37,99,235,0.5);">
+        <h3 style="text-align: center; font-size: 1.1rem; color: #60a5fa;">⚔️ PvE</h3>
+        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div class="role-card">
+            <div class="role-avatar gold">LE</div>
+            <div class="role-info">
+              <h4>Marco</h4>
+              <span class="role-title">PvE Lead — Tactician of the Hunt - Synch zwischen M+ und Raid, Charakterpflege und Skill-entwicklung</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">F</div>
+            <div class="role-info">
+              <h4>Fabi</h4>
+              <span class="role-title">Raid Lead — Master of the Hunt, Organisation, Kaderentwicklung, Raider-Recruitment</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">MA</div>
+            <div class="role-info">
+              <h4>Malte</h4>
+              <span class="role-title">M+ Lead — Warden of the Chase, Orga von M+ Pushgruppen, M+ Matchmaking auf allen Leveln, M+ Recruitment</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PVP -->
+      <div class="wow-panel" style="border-color: rgba(239,68,68,0.5);">
+        <h3 style="text-align: center; font-size: 1.1rem; color: #f87171;">🏟️ PvP</h3>
+        <div style="margin-top: 14px; display: flex; flex-direction: column; gap: 10px;">
+          <div class="role-card">
+            <div class="role-avatar gold">A</div>
+            <div class="role-info">
+              <h4>Alex</h4>
+              <span class="role-title">PvP Lead — Warlord of the Pack, Building PvP Community and Events</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">B</div>
+            <div class="role-info">
+              <h4>Bizzy</h4>
+              <span class="role-title">PvP Support & Mentor</span>
+            </div>
+          </div>
+          <div class="role-card">
+            <div class="role-avatar blue">F</div>
+            <div class="role-info">
+              <h4>Fabi</h4>
+              <span class="role-title">PvP Support & Mentor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 6 — PVE SYSTEM ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-6">
+    <h1 class="slide-title">PvE System</h1>
+    <p class="slide-subtitle">Strategie → Umsetzung → Aktivität</p>
+
+    <div class="flow-row">
+      <div class="flow-box gold-box">🧠 Strategie</div>
+      <span class="flow-arrow">➤</span>
+      <div class="flow-box blue-box">⚔️ Umsetzung</div>
+      <span class="flow-arrow">➤</span>
+      <div class="flow-box green-box">🔥 Aktivität</div>
+    </div>
+
+    <div class="grid-3" style="max-width: 1100px;">
+      <div class="wow-panel" style="border-color: rgba(201,168,76,0.4);">
+        <h3>🧠 Marco — Strategie</h3>
+        <ul>
+          <li>Raid-Strategie & Ausrichtung</li>
+          <li>Spielerentwicklung</li>
+          <li>Langfristige PvE-Vision</li>
+        </ul>
+        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(201,168,76,0.08); border-radius: 3px; font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          „PvE Strategie mit Fabi und Malte besprechen, Aktivitäten definieren, Verantwortlicher für PvE Community"
+        </div>
+      </div>
+      <div class="wow-panel" style="border-color: rgba(37,99,235,0.4);">
+        <h3 style="color: #60a5fa;">⚔️ Fabi — Umsetzung</h3>
+        <ul>
+          <li>Raid-Execution & Leadership</li>
+          <li>Setup & Aufstellung</li>
+          <li>Orga mit Funktionsrolle Raidleader Elias</li>
+          <li>Recruitment von weiteren Raidern</li>
+          <li>Definition Raidziele</li>
+        </ul>
+        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(37,99,235,0.08); border-radius: 3px; font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          „Raid-Setup bauen, Bosse clearen"
+        </div>
+      </div>
+      <div class="wow-panel" style="border-color: rgba(34,197,94,0.4);">
+        <h3 style="color: #4ade80;">🔥 Malte — Aktivität</h3>
+        <ul>
+          <li>M+ Gruppen organisieren</li>
+          <li>Push-Gruppen & Weekly Keys</li>
+          <li>Aktivität im Alltag schaffen für alle Level</li>
+          <li>Recruitment von M+-Spielern</li>
+        </ul>
+        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(34,197,94,0.08); border-radius: 3px; font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          „Key-Gruppen starten, Wochenfokus setzen"
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ═══════════════════════════════════════════ SLIDE 7 — PVP SYSTEM ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-6">
+    <h1 class="slide-title">PvP System</h1>
+    <p class="slide-subtitle">Struktur für Arena & RBG</p>
+
+    <div class="flow-row">
+      <div class="flow-box red-box">🧠 Vision</div>
+      <span class="flow-arrow">➤</span>
+      <div class="flow-box blue-box">⚔️ Orga</div>
+      <span class="flow-arrow">➤</span>
+      <div class="flow-box green-box">🔥 Warrrrr</div>
+    </div>
+
+    <div class="grid-3" style="max-width: 1100px;">
+      <div class="wow-panel" style="border-color: rgba(239,68,68,0.4);">
+        <h3 style="color: #f87171;">🏟️ Alex — PvP Lead</h3>
+        <ul>
+          <li>PvP-Struktur & Planung</li>
+          <li>RBG-Setup & Organisation</li>
+          <li>Arena-Gruppen koordinieren</li>
+          <li>Progression & Ziele definieren</li>
+        </ul>
+        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(239,68,68,0.08); border-radius: 3px; font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          Warlord of the Pack
+        </div>  
+      </div>
+      <div class="wow-panel" style="border-color: rgba(139,92,246,0.4);">
+        <h3 style="color: #a78bfa;">🛡️ Bizzy — PvP Mentor & Support</h3>
+        <ul>
+          <li>Coaching & Unterstützung</li>
+          <li>Neue Spieler an PvP heranführen</li>
+          <li>Gruppen-Aktivität fördern</li>
+          <li>Events mit PvP-Fokus unterstützen</li>
+        </ul>
+        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(139,92,246,0.08); border-radius: 3px; font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          Mentor & Brücke
+        </div>
+      </div>
+      <div class="wow-panel" style="border-color: rgba(34,197,94,0.4);">
+        <h3 style="color: #4ade80;">🔥 Fabi — Support</h3>
+        <ul>
+          <li>Arena Team Matchmaking Support</li>
+          <li>Recruitment von PvP-Spielern</li>
+        </ul>
+        <div style="margin-top: 12px; padding: 8px 12px; background: rgba(34,197,94,0.08); border-radius: 3px; font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          „Stärken kombinieren und unterstützen"
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 8 — COMMUNITY SYSTEM ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-8">
+    <h1 class="slide-title">Community System</h1>
+    <p class="slide-subtitle">Das Herz des Rudels</p>
+
+    <div class="network-center">
+      <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 700 320">
+        <line x1="350" y1="60" x2="150" y2="250" stroke="rgba(201,168,76,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="350" y1="60" x2="550" y2="250" stroke="rgba(201,168,76,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="350" y1="60" x2="350" y2="250" stroke="rgba(201,168,76,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="150" y1="250" x2="350" y2="250" stroke="rgba(201,168,76,0.12)" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="350" y1="250" x2="550" y2="250" stroke="rgba(201,168,76,0.12)" stroke-width="1" stroke-dasharray="4,4"/>
+      </svg>
+      <div class="network-node" style="top: 0; left: 50%; transform: translateX(-50%); border-color: var(--gold);">
+        <h4>🐺 Marc</h4>
+        <p>Systeme, Identität,<br>Überblick,<br>Housing</p>
+      </div>
+      <div class="network-node" style="bottom: 0; left: 5%; border-color: rgba(201,168,76,0.5);">
+        <h4>📣 Lisa</h4>
+        <p>Recruiting,<br>Gildenbank, Vice</p>
+      </div>
+      <div class="network-node" style="bottom: 0; left: 50%; transform: translateX(-50%); border-color: rgba(37,99,235,0.5);">
+        <h4>🤝 Marco</h4>
+        <p>Integration,<br>Verbindung zwischen Spielern</p>
+      </div>
+      <div class="network-node" style="bottom: 0; right: 5%; border-color: rgba(139,92,246,0.5);">
+        <h4>🎭 Bizzy</h4>
+        <p>Events,<br>Spaß, <br> Kultur & Story</p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+      <div style="padding: 10px 20px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-radius: 20px; font-size: 0.85rem; color: var(--text-dim);">
+        💬 Gespräche starten
+      </div>
+      <div style="padding: 10px 20px; background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2); border-radius: 20px; font-size: 0.85rem; color: var(--text-dim);">
+        🔗 Spieler verbinden
+      </div>
+      <div style="padding: 10px 20px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2); border-radius: 20px; font-size: 0.85rem; color: var(--text-dim);">
+        🎉 Events organisieren
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 9 — RECRUITING ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-9">
+    <h1 class="slide-title">Recruiting & Wachstum</h1>
+    <p class="slide-subtitle">Jeder Bereich verantwortet sein Recruiting</p>
+
+    <div class="recruit-grid">
+      <div class="recruit-card" style="border-color: rgba(201,168,76,0.4);">
+        <span class="recruit-icon">👑</span>
+        <h4>Lisa</h4>
+        <p>Gesamt-Recruiting<br>& Koordination</p>
+      </div>
+      <div class="recruit-card" style="border-color: rgba(37,99,235,0.4);">
+        <span class="recruit-icon">⚔️</span>
+        <h4>Fabi</h4>
+        <p>Raider<br>Recruiting</p>
+      </div>
+      <div class="recruit-card" style="border-color: rgba(239,68,68,0.4);">
+        <span class="recruit-icon">🏟️</span>
+        <h4>Alex & Bizzy</h4>
+        <p>PvP<br>Recruiting</p>
+      </div>
+      <div class="recruit-card" style="border-color: rgba(34,197,94,0.4);">
+        <span class="recruit-icon">🔑</span>
+        <h4>Malte</h4>
+        <p>M+<br>Recruiting</p>
+      </div>
+    </div>
+
+    <div class="wow-panel" style="text-align: center; max-width: 600px; margin-top: 30px;">
+      <p class="epic-quote" style="font-size: 1.1rem;">
+        „Jeder Bereich besitzt sein Recruiting."
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 10 — COUNCIL COORDINATION ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-10">
+    <h1 class="slide-title">Council Koordination</h1>
+    <p class="slide-subtitle">Struktur ohne Druck</p>
+
+    <div style="max-width: 700px; width: 100%;">
+      <div class="wow-panel" style="text-align: center; margin-bottom: 24px;">
+        <div style="font-size: 2.5rem; margin-bottom: 10px;">👑</div>
+        <h3 style="font-size: 1.2rem;">Marc & Lisa — Council Koordination</h3>
+        <p style="color: var(--text-dim); margin-top: 8px; font-size: 0.9rem;">
+          Hält die Fäden zusammen, ohne Druck aufzubauen
+        </p>
+      </div>
+
+      <div class="grid-2" style="max-width: 700px;">
+        <div class="wow-panel" style="text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 8px;">📅</div>
+          <h3>Orga Council Meetings</h3>
+          <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 6px;">
+            Schnelle Abstimmung,<br>keine langen Meetings
+          </p>
+        </div>
+        <div class="wow-panel" style="text-align: center;">
+          <div style="font-size: 2rem; margin-bottom: 8px;">📝</div>
+          <h3>Passive Updates</h3>
+          <p style="color: var(--text-dim); font-size: 0.85rem; margin-top: 6px;">
+            Kein schweres Reporting,<br>einfache Status-Updates via Chat
+          </p>
+        </div>
+      </div>
+
+      <div class="wow-panel" style="text-align: center; margin-top: 24px;">
+        <p class="epic-quote" style="font-size: 1.1rem;">
+          „Struktur ohne Druck."
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 11 — EXPECTATIONS ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-11">
+    <h1 class="slide-title">Erwartungen</h1>
+    <p class="slide-subtitle">Was wir von jedem im Council erwarten</p>
+
+    <div class="expect-grid">
+      <div class="expect-card">
+        <span class="expect-icon">🎙️</span>
+        <h4>Voice aktiv</h4>
+        <p>Sei präsent im Voice — das ist unser Lagerfeuer</p>
+      </div>
+      <div class="expect-card">
+        <span class="expect-icon">🔥</span>
+        <h4>Aktivität schaffen</h4>
+        <p>Starte Gruppen, lade ein, mach den ersten Schritt</p>
+      </div>
+      <div class="expect-card">
+        <span class="expect-icon">📋</span>
+        <h4>Vorausplanen</h4>
+        <p>Denke eine Woche voraus — nicht nur heute</p>
+      </div>
+      <div class="expect-card">
+        <span class="expect-icon">🐺</span>
+        <h4>Rudel-Mentalität</h4>
+        <p>Wir bewegen uns zusammen — immer</p>
+      </div>
+    </div>
+
+    <div class="glow-divider" style="margin-top: 35px;"></div>
+    <p class="epic-quote" style="font-size: 1.3rem; margin-top: 15px;">
+      „Aktivität wird geschaffen — nicht abgewartet."
+    </p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ SLIDE 12 — FINAL MESSAGE ═══════════════════════════════════════════ -->
+  <div class="slide" id="slide-12">
+    <img src="brotherhood_logo.png" alt="Brotherhood of the Wolf" class="guild-logo large">
+
+    <div class="final-text">
+      <span>Wir warten nicht.</span>
+      <span>Wir folgen keinem Chaos.</span>
+      <div class="glow-divider" style="margin: 15px auto;"></div>
+      <span style="font-size: 2.4rem;">Wir bauen das Rudel.</span>
+    </div>
+
+    <div style="margin-top: 50px; display: flex; gap: 20px; opacity: 0.4;">
+      <span style="font-size: 1.5rem;">🐺</span>
+      <span style="font-size: 1.5rem;">🐺</span>
+      <span style="font-size: 1.5rem;">🐺</span>
+      <span style="font-size: 1.5rem;">🐺</span>
+      <span style="font-size: 1.5rem;">🐺</span>
+      <span style="font-size: 1.5rem;">🐺</span>
+      <span style="font-size: 1.5rem;">🐺</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ NAVIGATION ═══════════════════════════════════════════ -->
+<nav class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">◄ Zurück</button>
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+    <div class="slide-dots" id="slideDots"></div>
+    <span class="slide-counter" id="slideCounter">1 / 12</span>
+  </div>
+  <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Weiter ►</button>
+</nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let currentSlide = 0;
+
+  // Build dots
+  const dotsContainer = document.getElementById('slideDots');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function updateSlide() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+    document.querySelectorAll('.slide-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+    document.getElementById('prevBtn').disabled = currentSlide === 0;
+    document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  }
+
+  function changeSlide(dir) {
+    const next = currentSlide + dir;
+    if (next >= 0 && next < totalSlides) {
+      currentSlide = next;
+      updateSlide();
+    }
+  }
+
+  function goToSlide(index) {
+    currentSlide = index;
+    updateSlide();
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); }
+    if (e.key === 'Home') { e.preventDefault(); goToSlide(0); }
+    if (e.key === 'End') { e.preventDefault(); goToSlide(totalSlides - 1); }
+  });
+
+  // Touch support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+  });
+
+  updateSlide();
+</script>
+
+</body>
+</html>
